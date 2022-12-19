@@ -1,6 +1,7 @@
 import { userSchema } from "../models/user.model.js";
 import db from "../database/database.js";
 import bcrypt from "bcrypt";
+import { v4 as uuid } from "uuid";
 
 export async function signUp(req, res) {
     const { name, email, password, confirmPassword } = req.body;
@@ -38,5 +39,25 @@ export async function signUp(req, res) {
 }
 
 export async function signIn(req, res) {
-    
+    const { email, password } = req.body;
+
+    try {
+        const userExist = await db.query(`SELECT * FROM users WHERE email=$1;`, [email]);
+
+        if (userExist.rows.length === 0) {
+            return res.status(401).send("Usuario não existe!");
+        }
+
+        if (bcrypt.compareSync(password, userExist.rows[0].password)) {
+            const token = uuid();
+
+            await db.query(`INSERT INTO sessions (token, email) VALUES ($1, $2);`, [token, email]);
+            res.status(200).send({ token });
+        } else {
+            res.status(401).send("Usuario não encontrado! E-mail ou senha incorretos.");
+        }
+    } catch (err) {
+        console.log(err)
+        res.sendStatus(500);
+    }
 }
