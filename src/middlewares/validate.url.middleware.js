@@ -17,3 +17,16 @@ export async function validateToken(req, res, next) {
     res.locals.user = user.rows[0];
     next();
 }
+
+export async function shortUrlExist(req, res, next) {
+    const { shortUrl } = req.params;
+
+    const shortExist = await db.query(`SELECT * FROM urls WHERE short_url=$1;`, [shortUrl]);
+
+    if (shortExist.rows.length === 0) {
+        return res.status(404).send("Short URL não existe!");
+    }
+
+    res.locals.short = shortExist.rows[0];
+    next();
+}
