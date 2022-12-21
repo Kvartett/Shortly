@@ -30,3 +30,20 @@ export async function shortUrlExist(req, res, next) {
     res.locals.short = shortExist.rows[0];
     next();
 }
+
+export async function canDeleteUrl(req, res, next) {
+    const { id } = req.params;
+    const user = res.locals.user;
+
+    const urlExist = await db.query(`SELECT * FROM urls WHERE id=$1;`, [id]);
+
+    if (urlExist.rows.length === 0) {
+        return res.status(404).send("Short URL não existe!");
+    }
+
+    if (urlExist.rows[0].id_user !== user.id) {
+        return res.status(401).send("Essa URL não é sua para deletar!");
+    }
+
+    next();
+}

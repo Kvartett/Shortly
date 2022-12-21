@@ -1,4 +1,4 @@
-import { loginSchema, userSchema } from "../models/user.model.js";
+import { loginSchema, userSchema } from "../models/user.models.js";
 import db from "../database/database.js";
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
