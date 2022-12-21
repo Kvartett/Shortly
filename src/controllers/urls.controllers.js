@@ -36,7 +36,7 @@ export async function openShortUrl(req, res) {
     const newVisitCount = short.visitcount + 1;
     try {
         await db.query(`UPDATE urls SET visitcount=$1;`, [newVisitCount]);
-        res.redirect(`${short.url}`)
+        return res.redirect(`${short.url}`)
     } catch (err) {
         return res.status(500).send(err.message);
     }
