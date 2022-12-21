@@ -14,3 +14,12 @@ export async function userInfo(req, res) {
         return res.status(500).send(err.message);
     }
 }
+
+export async function getRanking(req, res) {
+    try {
+        const queryRanking = await db.query(`SELECT users.id, users.name, COUNT(urls.id) AS "linksCount", COALESCE(SUM(urls.visit_count), 0) AS "visitCount" FROM users LEFT JOIN urls ON users.id = urls.id_user GROUP BY users.id ORDER BY "visitCount" DESC LIMIT 10;`);
+        return res.status(200).send(queryRanking.rows);
+    } catch (err) {
+        return res.status(500).send(err.message);
+    }
+}
