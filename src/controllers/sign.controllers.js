@@ -18,14 +18,14 @@ export async function signUp(req, res) {
     }
 
     try {
-        const userExist = await db.query(`SELECT * FROM users WHERE email=$1;`, [email]);
+        const userExist = await db.query(`SELECT * FROM users WHERE email=$1;`, [email.toLowerCase()]);
 
         if (userExist.rows.length > 0) {
             return res.status(409).send("E-mail ja cadastrado!");
         }
 
         const passwordHash = bcrypt.hashSync(password, 12);
-        await db.query(`INSERT INTO users (name, email, password) VALUES ($1, $2, $3);`, [name, email, passwordHash]);
+        await db.query(`INSERT INTO users (name, email, password) VALUES ($1, $2, $3);`, [name, email.toLowerCase(), passwordHash]);
         res.status(201).send("Usuario cadastrado!");
     } catch (err) {
         console.log(err);
@@ -44,7 +44,7 @@ export async function signIn(req, res) {
     }
 
     try {
-        const userExist = await db.query(`SELECT * FROM users WHERE email=$1;`, [email]);
+        const userExist = await db.query(`SELECT * FROM users WHERE email=$1;`, [email.toLowerCase()]);
 
         if (userExist.rows.length === 0) {
             return res.status(401).send("Usuario não existe!");
@@ -53,7 +53,7 @@ export async function signIn(req, res) {
         if (bcrypt.compareSync(password, userExist.rows[0].password)) {
             const token = uuid();
 
-            await db.query(`INSERT INTO sessions (token, email) VALUES ($1, $2);`, [token, email]);
+            await db.query(`INSERT INTO sessions (token, email) VALUES ($1, $2);`, [token, email.toLowerCase()]);
             res.status(200).send({ token });
         } else {
             res.status(401).send("Usuario não encontrado! E-mail ou senha incorretos.");

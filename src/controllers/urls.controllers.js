@@ -6,6 +6,7 @@ export async function shortenUrl(req, res) {
     const { url } = req.body;
     const user = res.locals.user;
 
+    console.log(user)
     const shortId = await nanoid();
 
     const { error } = urlShortenSchema.validate({ url }, { abortEarly: false });
@@ -16,7 +17,7 @@ export async function shortenUrl(req, res) {
     }
 
     try {
-        await db.query(`INSERT INTO urls (id_user, name_user, short_url, url, visit_count) VALUES ($1, $2, $3, $4, $5);`, [user.id, user.name, shortId, url, 0]);
+        await db.query(`INSERT INTO urls ("idUser", "nameUser", "shortUrl", url, "visitCount") VALUES ($1, $2, $3, $4, $5);`, [user.id, user.name, shortId, url, 0]);
         return res.status(201).send({ shortUrl: shortId })
     } catch (err) {
         console.log(err);
@@ -41,10 +42,10 @@ export async function getShortUrl(req, res) {
 
 export async function openShortUrl(req, res) {
     const short = res.locals.short;
-    const newVisitCount = short.visit_count + 1;
-
+    const newVisitCount = short.visitCount + 1;
+    console.log(newVisitCount);
     try {
-        await db.query(`UPDATE urls SET visit_count=$1 WHERE short_url=$2;`, [newVisitCount, short.short_url]);
+        await db.query(`UPDATE urls SET "visitCount"=$1 WHERE "shortUrl"=$2;`, [newVisitCount, short.shortUrl]);
         return res.redirect(`${short.url}`)
     } catch (err) {
         return res.status(500).send(err.message);
