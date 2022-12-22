@@ -6,7 +6,6 @@ export async function shortenUrl(req, res) {
     const { url } = req.body;
     const user = res.locals.user;
 
-    console.log(user)
     const shortId = await nanoid();
 
     const { error } = urlShortenSchema.validate({ url }, { abortEarly: false });
@@ -33,7 +32,7 @@ export async function getShortUrl(req, res) {
             return res.status(404).send("id de url inexistente!")
         }
 
-        res.status(200).send({ id: short.rows[0].id, shortUrl: short.rows[0].short_url, url: short.rows[0].url })
+        res.status(200).send({ id: short.rows[0].id, shortUrl: short.rows[0].shortUrl, url: short.rows[0].url })
     } catch (err) {
         return res.status(500).send(err.message)
     }
@@ -43,7 +42,6 @@ export async function getShortUrl(req, res) {
 export async function openShortUrl(req, res) {
     const short = res.locals.short;
     const newVisitCount = short.visitCount + 1;
-    console.log(newVisitCount);
     try {
         await db.query(`UPDATE urls SET "visitCount"=$1 WHERE "shortUrl"=$2;`, [newVisitCount, short.shortUrl]);
         return res.redirect(`${short.url}`)

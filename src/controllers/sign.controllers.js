@@ -54,7 +54,7 @@ export async function signIn(req, res) {
             const token = uuid();
 
             await db.query(`INSERT INTO sessions (token, email) VALUES ($1, $2);`, [token, email.toLowerCase()]);
-            res.status(200).send({ token });
+            res.status(200).send(token);
         } else {
             res.status(401).send("Usuario não encontrado! E-mail ou senha incorretos.");
         }
