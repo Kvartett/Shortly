@@ -29,12 +29,12 @@ export async function getShortUrl(req, res) {
     try {
         const short = await db.query(`SELECT * FROM urls WHERE id=$1;`, [id]);
         if (short.rows.length === 0) {
-            return res.status(404).send("id de url inexistente!")
+            return res.status(404).send("id de url inexistente!");
         }
 
-        res.status(200).send({ id: short.rows[0].id, shortUrl: short.rows[0].shortUrl, url: short.rows[0].url })
+        res.status(200).send({ id: short.rows[0].id, shortUrl: short.rows[0].shortUrl, url: short.rows[0].url });
     } catch (err) {
-        return res.status(500).send(err.message)
+        return res.status(500).send(err.message);
     }
 
 }
@@ -42,9 +42,10 @@ export async function getShortUrl(req, res) {
 export async function openShortUrl(req, res) {
     const short = res.locals.short;
     const newVisitCount = short.visitCount + 1;
+
     try {
         await db.query(`UPDATE urls SET "visitCount"=$1 WHERE "shortUrl"=$2;`, [newVisitCount, short.shortUrl]);
-        return res.redirect(`${short.url}`)
+        return res.redirect(`${short.url}`);
     } catch (err) {
         return res.status(500).send(err.message);
     }

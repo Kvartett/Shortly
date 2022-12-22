@@ -41,7 +41,7 @@ export async function canDeleteUrl(req, res, next) {
         return res.status(404).send("Short URL não existe!");
     }
 
-    if (urlExist.rows[0].id_user !== user.id) {
+    if (urlExist.rows[0].idUser !== user.id) {
         return res.status(401).send("Essa URL não é sua para deletar!");
     }
 

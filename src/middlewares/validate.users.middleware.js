@@ -11,7 +11,7 @@ export async function validateTokenUser(req, res, next) {
     if (userSession.rows.length === 0) {
         return res.sendStatus(404);
     }
-
+    
     const user = await db.query(`SELECT * FROM users WHERE email=$1;`, [userSession.rows[0].email]);
 
     res.locals.user = user.rows[0];
